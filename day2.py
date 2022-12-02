@@ -17,20 +17,20 @@ def get_game_result(opponent_move, my_move):
         return 0
 
 
+decode_move = {
+    "A": "Rock",
+    "B": "Paper",
+    "C": "Scissors",
+    "X": "Rock",
+    "Y": "Paper",
+    "Z": "Scissors"
+}
+
+
 def part_1(lines):
-    decoder_key = {
-        "A": "Rock",
-        "B": "Paper",
-        "C": "Scissors",
-        "X": "Rock",
-        "Y": "Paper",
-        "Z": "Scissors"
-    }
     results = []
     for line in lines:
-        encoded_opponent_move, encoded_my_move = line.split(" ")
-        opponent_move, my_move = decoder_key[
-            encoded_opponent_move], decoder_key[encoded_my_move]
+        opponent_move, my_move = [decode_move[x] for x in line.split(" ")]
         results.append(get_game_result(
             opponent_move, my_move) + get_move_score(my_move))
     return sum(results)
@@ -48,12 +48,7 @@ def decide_move(opponent_move, expected_result):
 
 
 def part_2(lines):
-    decode_move_key = {
-        "A": "Rock",
-        "B": "Paper",
-        "C": "Scissors",
-    }
-    decode_result_key = {
+    decode_result = {
         "X": "Loss",
         "Y": "Draw",
         "Z": "Win"
@@ -62,8 +57,8 @@ def part_2(lines):
 
     for line in lines:
         encoded_opponent_move, encoded_result = line.split(" ")
-        opponent_move, result = decode_move_key[
-            encoded_opponent_move], decode_result_key[encoded_result]
+        opponent_move, result = decode_move[
+            encoded_opponent_move], decode_result[encoded_result]
         my_move = decide_move(opponent_move, result)
         results.append(get_game_result(
             opponent_move, my_move) + get_move_score(my_move))
@@ -75,3 +70,7 @@ if __name__ == "__main__":
         lines = [line.rstrip() for line in file]
         print("Part 1:", part_1(lines))
         print("Part 2:", part_2(lines))
+
+        assert part_1(lines) == 11906
+        assert part_2(lines) == 11186
+        print("Assertions passed")
