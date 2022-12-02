@@ -8,8 +8,17 @@ def get_move_score(move):
     return key[move]
 
 
-def decode_move(encoded_move):
-    key = {
+def get_game_result(opponent_move, my_move):
+    if opponent_move == my_move:
+        return 3
+    elif (opponent_move == "Paper" and my_move == "Scissors") or (opponent_move == "Rock" and my_move == "Paper") or (opponent_move == "Scissors" and my_move == "Rock"):
+        return 6
+    else:
+        return 0
+
+
+def part_1(lines):
+    decoder_key = {
         "A": "Rock",
         "B": "Paper",
         "C": "Scissors",
@@ -17,82 +26,52 @@ def decode_move(encoded_move):
         "Y": "Paper",
         "Z": "Scissors"
     }
-    return key[encoded_move]
-
-
-def get_result(opponent_move, my_move):
-    if opponent_move == my_move:
-        return ("Draw", 3)
-    if opponent_move == "Rock":
-        if my_move == "Paper":
-            return ("Win", 6)
-        elif my_move == "Scissors":
-            return ("Loss", 0)
-    elif opponent_move == "Paper":
-        if my_move == "Rock":
-            return ("Loss", 0)
-        elif my_move == "Scissors":
-            return ("Win", 6)
-    elif opponent_move == "Scissors":
-        if my_move == "Rock":
-            return ("Win", 6)
-        elif my_move == "Paper":
-            return ("Loss", 0)
-
-
-def total_score(strategy_guide):
-    lines = [line.rstrip() for line in strategy_guide]
     results = []
     for line in lines:
         encoded_opponent_move, encoded_my_move = line.split(" ")
-        opponent_move, my_move = decode_move(
-            encoded_opponent_move), decode_move(encoded_my_move)
-        results.append(get_result(opponent_move, my_move)
-                       [1] + get_move_score(my_move))
+        opponent_move, my_move = decoder_key[
+            encoded_opponent_move], decoder_key[encoded_my_move]
+        results.append(get_game_result(
+            opponent_move, my_move) + get_move_score(my_move))
     return sum(results)
 
 
-def decide_move(opponent_move, result):
-    if result == "Draw":
+def decide_move(opponent_move, expected_result):
+    if expected_result == "Draw":
         return opponent_move
-    elif result == "Win":
-        if opponent_move == "Rock":
-            return "Paper"
-        elif opponent_move == "Scissors":
-            return "Rock"
-        elif opponent_move == "Paper":
-            return "Scissors"
-    elif result == "Loss":
-        if opponent_move == "Rock":
-            return "Scissors"
-        elif opponent_move == "Scissors":
-            return "Paper"
-        elif opponent_move == "Paper":
-            return "Rock"
+    if opponent_move == "Rock":
+        return "Paper" if expected_result == "Win" else "Scissors"
+    if opponent_move == "Scissors":
+        return "Rock" if expected_result == "Win" else "Paper"
+    if opponent_move == "Paper":
+        return "Scissors" if expected_result == "Win" else "Rock"
 
 
-def total_sneaky_score(strategy_guide):
-    lines = [line.rstrip() for line in strategy_guide]
-    results = []
-    for line in lines:
-        encoded_opponent_move, encoded_result = line.split(" ")
-        opponent_move, result = decode_move(
-            encoded_opponent_move), decode_end_result(encoded_result)
-        my_move = decide_move(opponent_move, result)
-        results.append(get_result(opponent_move, my_move)
-                       [1] + get_move_score(my_move))
-    return sum(results)
-
-
-def decode_end_result(encoded):
-    key = {
+def part_2(lines):
+    decode_move_key = {
+        "A": "Rock",
+        "B": "Paper",
+        "C": "Scissors",
+    }
+    decode_result_key = {
         "X": "Loss",
         "Y": "Draw",
         "Z": "Win"
     }
-    return key[encoded]
+    results = []
+
+    for line in lines:
+        encoded_opponent_move, encoded_result = line.split(" ")
+        opponent_move, result = decode_move_key[
+            encoded_opponent_move], decode_result_key[encoded_result]
+        my_move = decide_move(opponent_move, result)
+        results.append(get_game_result(
+            opponent_move, my_move) + get_move_score(my_move))
+    return sum(results)
 
 
 if __name__ == "__main__":
     with open("data/day2.txt") as file:
-        print(total_sneaky_score(file))
+        lines = [line.rstrip() for line in file]
+        print("Part 1:", part_1(lines))
+        print("Part 2:", part_2(lines))
