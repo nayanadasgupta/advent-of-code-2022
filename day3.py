@@ -1,7 +1,7 @@
 def get_shared_item(rucksack):
     half = len(rucksack) // 2
     first_half, second_half = rucksack[:half], rucksack[half:]
-    return set(first_half).intersection(second_half)
+    return set(first_half).intersection(second_half).pop()
 
 
 def get_priority(item):
@@ -14,8 +14,7 @@ def part_1(lines):
     result = []
     for line in lines:
         shared_items = get_shared_item(line)
-        for item in shared_items:
-            result.append(get_priority(item))
+        result.append(get_priority(shared_items))
     print("Part 1:", sum(result))
 
 
